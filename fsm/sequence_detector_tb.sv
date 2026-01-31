@@ -1,0 +1,41 @@
+`timescale 1ns/100ps
+module seq_detector_tb();
+
+reg idata, clk, rst_n;
+wire out;
+
+initial begin
+        #10 clk = 1'b0;
+        forever #5 clk = ~clk; // 10ns period
+end
+
+seq_detector dut (
+        .in  (idata),
+        .clk (clk),
+        .resetn (rst_n),
+        .out (out)
+        );
+
+initial begin
+        #0   idata = 1'b0;
+        #45  idata = 1'b1;
+        @(posedge clk)
+             idata = 1'b0;
+        @(posedge clk)
+             idata = 1'b0;
+        @(posedge clk)
+             idata = 1'b1;
+        @(posedge clk)
+             idata = 1'b0;
+        @(posedge clk)
+             idata = 1'b0;
+        @(posedge clk)
+             idata = 1'b1;
+end
+
+initial begin
+        $dumpfile("seq_1001_detector.vcd")
+        $dumpvars();
+end
+
+endmodule
