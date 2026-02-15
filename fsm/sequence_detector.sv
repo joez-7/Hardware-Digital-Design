@@ -38,6 +38,8 @@ module seq_detector (
     else state <= next_state;
   end
 
+  // Moore FSM output only depends on current state
+  // Measly FSM output depends on current state and input
   assign out = (state == S3) & in;
 
 endmodule
