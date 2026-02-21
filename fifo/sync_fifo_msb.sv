@@ -1,3 +1,4 @@
+// Moore Synchronous FIFO
 module sync_fifo_msb #(
     parameter WIDTH=8,
     parameter DEPTH=16
@@ -38,4 +39,5 @@ module sync_fifo_msb #(
     end
 
 endmodule
+
 
