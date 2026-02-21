@@ -2,8 +2,8 @@ module sync_fifo_msb #(
     parameter WIDTH=8,
     parameter DEPTH=16
 )  (
-    input logic 	            clk,
-    input logic 	            rst_n,
+    input logic 	          clk,
+    input logic 	          rst_n,
     input logic	              wr_en,
     input logic               rd_en,
     input logic  [WIDTH-1:0]  wr_data,

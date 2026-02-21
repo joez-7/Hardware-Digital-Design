@@ -1,7 +1,7 @@
 `timescale 1ns/100ps
 module tb();
     reg clk, rst_n, wr_en, rd_en;
-    reg [7:0] wr_data;
+    reg  [7:0] wr_data;
     wire [7:0] rd_data;
     wire full, empty;
   
