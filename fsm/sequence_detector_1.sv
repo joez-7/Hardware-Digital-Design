@@ -1,5 +1,5 @@
 // FSM detect sequence for 1001
-module seq_detector (
+module sequence_detector_1 (
   input in,
   input clk,
   input rst_n,
@@ -42,12 +42,13 @@ module seq_detector (
     else state <= next_state;
   end
 
-  // Moore FSM output only depends on current state
-  // Measly FSM output depends on current state and input
+  // Moore FSM output only depends on the current state
+  // Measly FSM output depends on the current state and input
   // assign out = (state == S3) & in;
   assign out = (state == S4);
 
 endmodule
+
 
 
 
