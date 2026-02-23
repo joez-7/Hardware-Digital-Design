@@ -1,7 +1,7 @@
 `timescale 1ns/100ps
 module seq_detector_tb();
 
-reg idata, clk, rst_n;
+reg in, clk, rst_n;
 wire out;
 
 initial begin
@@ -10,27 +10,27 @@ initial begin
 end
 
 seq_detector dut (
-        .in  (idata),
+        .in  (in),
         .clk (clk),
-        .resetn (rst_n),
+        .rst_n (rst_n),
         .out (out)
         );
 
 initial begin
-        #0   idata = 1'b0;
-        #45  idata = 1'b1;
+        #0   in = 1'b0;
+        #45  in = 1'b1;
         @(posedge clk)
-             idata = 1'b0;
+             in = 1'b0;
         @(posedge clk)
-             idata = 1'b0;
+             in = 1'b0;
         @(posedge clk)
-             idata = 1'b1;
+             in = 1'b1;
         @(posedge clk)
-             idata = 1'b0;
+             in = 1'b0;
         @(posedge clk)
-             idata = 1'b0;
+             in = 1'b0;
         @(posedge clk)
-             idata = 1'b1;
+             in = 1'b1;
 end
 
 initial begin
