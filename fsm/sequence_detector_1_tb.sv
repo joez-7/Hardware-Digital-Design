@@ -1,5 +1,5 @@
 `timescale 1ps/1ps
-module seq_detector_tb();
+module seq_detector_1_tb();
 
 reg in, clk, rst_n;
 wire out;
@@ -9,7 +9,7 @@ initial begin
         forever #5 clk = ~clk; // 10ns period
 end
 
-seq_detector dut (
+sequence_detector_1 dut (
         .in  (in),
         .clk (clk),
         .rst_n (rst_n),
