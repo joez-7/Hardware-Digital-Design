@@ -2,7 +2,7 @@
 module seq_detector (
   input in,
   input clk,
-  input resetn,
+  input rst_n,
   output out
 );
 
@@ -37,8 +37,8 @@ module seq_detector (
     endcase
   end
 
-  always @(posedge clk or negedge resetn) begin
-    if (!resetn) state <= S0;
+  always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) state <= S0;
     else state <= next_state;
   end
 
@@ -48,3 +48,4 @@ module seq_detector (
   assign out = (state == S4);
 
 endmodule
+
