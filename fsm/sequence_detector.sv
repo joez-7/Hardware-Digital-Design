@@ -13,7 +13,7 @@ module seq_detector (
   reg [2:0] next_state, state;
 
   always @(*) begin
-    next_state = state;
+    next_state = state;  // Provide default to avoid incomplete assignment → latch inference
     case(state)
       // IDLE
       S0: if (in == 1) next_state = S1;
@@ -48,4 +48,5 @@ module seq_detector (
   assign out = (state == S4);
 
 endmodule
+
 
