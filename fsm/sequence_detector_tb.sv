@@ -1,4 +1,4 @@
-`timescale 1ns/100ps
+`timescale 1ps/1ps
 module seq_detector_tb();
 
 reg in, clk, rst_n;
@@ -18,7 +18,14 @@ seq_detector dut (
 
 initial begin
         #0   in = 1'b0;
-        #45  in = 1'b1;
+        @(posedge clk)  
+             in = 1'b1;
+        @(posedge clk)
+             in = 1'b0;
+        @(posedge clk)
+             in = 1'b0;
+        @(posedge clk)
+             in = 1'b1;
         @(posedge clk)
              in = 1'b0;
         @(posedge clk)
@@ -27,14 +34,11 @@ initial begin
              in = 1'b1;
         @(posedge clk)
              in = 1'b0;
-        @(posedge clk)
-             in = 1'b0;
-        @(posedge clk)
-             in = 1'b1;
+        #120 $finish;
 end
 
 initial begin
-        $dumpfile("seq_1001_detector.vcd")
+        $dumpfile("seq_1001_detector.vcd");
         $dumpvars();
 end
 
