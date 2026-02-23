@@ -1,5 +1,5 @@
 // `timescale 1ns/100ps
-module vending_machine_tb();
+module vending_machine_1_tb();
 
     reg clk, rst_n, nickel, dime, quarter;
     wire dispense, change;
@@ -9,7 +9,7 @@ module vending_machine_tb();
             forever #5 clk = ~clk; // 10ns period
     end
   
-    vending_machine dut (
+    vending_machine_1 dut (
         .*
     );
 
