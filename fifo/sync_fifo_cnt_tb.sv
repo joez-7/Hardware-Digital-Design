@@ -1,5 +1,5 @@
 `timescale 1ns/100ps
-module sync_fifo_msb_tb;
+module sync_fifo_counter_tb;
     reg        clk, rst_n, wr_en, rd_en;
     reg  [7:0] wr_data;
     wire [7:0] rd_data;
@@ -14,7 +14,7 @@ module sync_fifo_msb_tb;
     end
 
     // DUT
-    sync_fifo_msb #(
+    sync_fifo_counter #(
         .WIDTH   (8),
         .DEPTH   (16)
     ) dut (
@@ -40,10 +40,11 @@ module sync_fifo_msb_tb;
         for (i = 0; i < 16; i = i + 1) begin
             @(posedge clk);
             if (!full) begin
-            wr_en   = 1'b1;
-            wr_data = i[7:0];
+                wr_en   = 1'b1;
+                rd_en   = 1'b0;
+                wr_data = i[7:0];
             end else begin
-            wr_en = 1'b0;
+                wr_en = 1'b0;
             end
         end
         @(posedge clk) wr_en = 1'b0;
@@ -52,11 +53,12 @@ module sync_fifo_msb_tb;
 
         // Read
         for (i = 0; i < 16; i = i + 1) begin
-            @(posedge clk);
+        @(posedge clk);
             if (!empty) begin
-            rd_en = 1'b1;
+                rd_en = 1'b1;
+                wr_en = 1'b0;
             end else begin
-            rd_en = 1'b0;
+                rd_en = 1'b0;
             end
         end
         @(posedge clk) rd_en = 1'b0;
@@ -65,7 +67,7 @@ module sync_fifo_msb_tb;
     end
 
     initial begin
-        $dumpfile("sync_fifo_msb.vcd");
+        $dumpfile("sync_fifo_counter.vcd");
         $dumpvars();
     end
 
