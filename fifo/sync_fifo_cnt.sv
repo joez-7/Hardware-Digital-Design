@@ -13,9 +13,9 @@ module sync_fifo_counter #(
     output logic             empty
 );
     localparam int PTR_DEPTH = $clog2(DEPTH);
-    localparam int CNT_W     = $clog2(DEPTH+1);
+    localparam int CNT_W     = $clog2(DEPTH);
 
-    logic [CNT_W-1:0] counter;
+    logic [CNT_W:0] counter;
     logic [WIDTH-1:0] mem [0:DEPTH-1];
     logic [PTR_DEPTH-1:0] wr_ptr, rd_ptr;
 
