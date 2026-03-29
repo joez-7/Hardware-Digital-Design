@@ -1,6 +1,6 @@
 ## First In, First Out (FIFO)
 ### Synchronous FIFO
-A synchronous FIFO works by using a read pointer and a write pointer to track locations in memory. The write pointer represents the next location where data be written, while the read pointer represents the next location where data will be read. The reason it's called synchronous FIFO is that both pointers are updated on the same clock edge, unlike asynchronous FIFO (which we’ll get to later). We use synchronous FIFO because in many cases, the write rate is faster than the read rate, so without a buffer, data could be lost because new data can be written before the old data can be read.
+A synchronous FIFO works by using a read pointer and a write pointer to track locations in memory. The write pointer represents the next location where data will be written, while the read pointer represents the next location where data will be read. The reason it's called synchronous FIFO is that both pointers are updated on the same clock edge, unlike asynchronous FIFO (which we’ll get to later). We use synchronous FIFO because in many cases, the write rate is faster than the read rate, so without a buffer, data could be lost because new data can be written before the old data can be read.
 
 Whenever a write or read happens, their corresponding pointer increments to the next location, but write can only occur if write is enabled and the FIFO is not full. While a read can only occur if read is enabled and the FIFO is not empty. 
 
@@ -16,6 +16,17 @@ To solve this issue, I used two methods in my example code.
    ![image](https://github.com/joez-7/Hardware-Digital-Design/blob/043656a910a1521f0a75354c23507c481815c9c4/images/synchronous%20fifo%20cnt.png)
 
 ## Asynchronous FIFO
+For an asynchronous FIFO, the main challenge is correctly asserting the full and empty conditions. Just like in a synchronous FIFO, we still need to use both read and write pointers for comparison. However, in an asynchronous FIFO, the write side and read side belong to two separate blocks running on asynchronous clocks, meaning both clocks have no phase relationship with each other. In order to assert the full and empty conditions, we need to transfer signals, specifically the read and write pointers, between these two blocks. This process is called clock domain crossing (CDC), and it introduces many possible issues.
+
+For instance, the receiving block might sample a signal during a transition that violates setup/hold time, causing metastability. To solve this, we pass the signal through multiple flip-flops (FF). Keep in mind that this doesn't eliminate metastability; it only reduces the probability of it occurring.
+
+Even if metastability is handled, there is still another issue when transferring signals between the two asynchronous blocks: the receiving side might capture the wrong data. Here's how: say an 8-bit pointer is changing from 0000 0000 to 0011 1101. Due to propagation delays, not all bits will change at the same time, so if the receiving end captures the signal mid-transition, it could latch something incorrect like 0010 1100, where multiple bits were still in the process of changing. To prevent this, we use Gray coding, where we convert the binary pointer, which continues to be used normally within its own block, into a Gray code representation. Between each increment, only 1 bit changes at a time, which eliminates the multi-bit transition problem. This Gray-coded pointer is what actually gets transferred between blocks for the full and empty comparisons.
+
+So the question is: how do we correctly assert full using Gray coding? In a synchronous FIFO, we used the MSB of the binary pointer to indicate whether the write pointer had filled the memory and looped back. With Gray coding, the top two MSBs are used to represent this. The FIFO is full when the top two MSBs of the Gray write pointer do not match the top two MSBs of the synchronized Gray read pointer, while all the remaining bits do match. For empty, we simply check whether the next Gray read pointer, the one pointing at the next read location, equals the synchronized Gray write pointer.
+
+Another issue in an asynchronous FIFO is that we generally use non-blocking assignments to update the full and empty signals when crossing from one clock domain to the other. This inherently introduces a one-cycle delay in updating those conditions. The problem is that this delay could cause a write to go through even when the FIFO is actually full. To account for this, we use the "next" Gray pointer in our full and empty comparisons, which looks one cycle ahead and makes up for that one-cycle delay.
+
+[Test the code](https://www.edaplayground.com/x/eCht)
 
 ### References
 
