@@ -13,7 +13,7 @@ To solve this issue, I used two methods in my example code.
 
 2. Instead of adding an extra MSB to track full/empty, you can use a counter that keeps track of how many entries are currently stored in the FIFO. Every write increments it by one, and every read decrements it by one. To check if the FIFO is empty or full, you just compare the counter against 0 or the maximum depth, respectively. [Test the code](https://www.edaplayground.com/x/eCia)
 
-   ![image](https://github.com/joez-7/Hardware-Digital-Design/blob/043656a910a1521f0a75354c23507c481815c9c4/images/synchronous%20fifo%20cnt.png)
+   ![image](https://github.com/joez-7/Digital-Hardware-Design/blob/2c01600e844a58bc53ddddade01af252e34b5663/images/synchronous%20fifo%20cnt.png)
 
 ## Asynchronous FIFO
 For an asynchronous FIFO, the main challenge is correctly asserting the full and empty conditions. Just like in a synchronous FIFO, we still need to use both read and write pointers for comparison. However, in an asynchronous FIFO, the write side and read side belong to two separate blocks running on asynchronous clocks, meaning both clocks have no phase relationship with each other. In order to assert the full and empty conditions, we need to transfer signals, specifically the read and write pointers, between these two blocks. This process is called clock domain crossing (CDC), and it introduces many possible issues.
@@ -25,6 +25,8 @@ Even if metastability is handled, there is still another issue when transferring
 So the question is: how do we correctly assert full using Gray coding? In a synchronous FIFO, we used the MSB of the binary pointer to indicate whether the write pointer had filled the memory and looped back. With Gray coding, the top two MSBs are used to represent this. The FIFO is full when the top two MSBs of the Gray write pointer do not match the top two MSBs of the synchronized Gray read pointer, while all the remaining bits do match. For empty, we simply check whether the next Gray read pointer, the one pointing at the next read location, equals the synchronized Gray write pointer.
 
 Another issue in an asynchronous FIFO is that we generally use non-blocking assignments to update the full and empty signals when crossing from one clock domain to the other. This inherently introduces a one-cycle delay in updating those conditions. The problem is that this delay could cause a write to go through even when the FIFO is actually full. To account for this, we use the "next" Gray pointer in our full and empty comparisons, which looks one cycle ahead and makes up for that one-cycle delay.
+
+However, Gray coding does come with one major requirement: the FIFO depth must be 2<sup>n</sup>. The reason is because of how Gray code fundamentally works. Gray code guarantees that only 1 bit changes per increment, but this is only true if the sequence completes a full cycle and wraps back around cleanly to the start. If the FIFO depth isn't a power of 2, the gray pointer would have to skip over some values in the sequence, and at the wraparound point, multiple bits could change at once, defeating the purpose of Gray code.
 
 [Test the code](https://www.edaplayground.com/x/eCht)
 
